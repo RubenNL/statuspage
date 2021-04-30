@@ -1,6 +1,5 @@
-({dig,port}=require('./tasks/index.js'))
-const actions=[]
 const fs=require('fs')
+const actions=require('./config.js');
 const server=require('http').createServer(function (req, res) {
 	fs.readFile(__dirname + "/dist/"+ req.url, function (err,data) {
 		if (err) {
