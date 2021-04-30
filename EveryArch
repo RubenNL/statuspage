@@ -1,0 +1,4 @@
+FROM --platform=$TARGETPLATFORM node:lts-alpine
+COPY --from=docker.rubend.nl/statuspage-build / dist
+EXPOSE 8080
+ENTRYPOINT ["npm","start"]

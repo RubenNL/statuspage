@@ -1,0 +1,16 @@
+FROM node:lts-alpine AS frontend
+WORKDIR /tmp/runner
+COPY frontend/package* ./
+RUN npm install
+COPY frontend .
+RUN npm run build
+
+FROM node:lts-alpine AS backend
+WORKDIR /tmp/runner
+COPY backend/package* ./
+RUN npm install
+COPY backend .
+COPY --from=frontend /tmp/runner/dist .
+
+FROM scratch AS statuspage-build
+COPY --from=backend /tmp/runner .

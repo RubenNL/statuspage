@@ -1,8 +1,0 @@
-FROM --platform=$TARGETPLATFORM node:lts-alpine AS backend
-WORKDIR /tmp
-COPY backend/package* ./
-RUN npm install
-COPY backend .
-COPY --from=docker.rubend.nl/statuspage-frontend / dist
-EXPOSE 8080
-ENTRYPOINT ["npm","start"]
