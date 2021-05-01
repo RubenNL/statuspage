@@ -28,6 +28,7 @@ const wss = new WebSocket.Server({ server });
 wss.on('connection', function connection(ws) {
 	ws.oldSend=ws.send;
 	ws.send=data=>ws.oldSend(JSON.stringify(data));
+	ws.send({type:'modules',modules:Object.keys(modules)});
 	ws.send({type:'actions',actions});
 	function cancelActions(actions,trace) {
 		actions.map((task,id)=>{
