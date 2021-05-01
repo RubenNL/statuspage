@@ -1,4 +1,6 @@
-FROM --platform=$TARGETPLATFORM node:lts-alpine
-COPY --from=docker.rubend.nl/statuspage-build / dist
+FROM --platform=$TARGETPLATFORM alpine
+WORKDIR /tmp/runner
+RUN apk add --update nodejs
 EXPOSE 8080
-ENTRYPOINT ["npm","start"]
+ENTRYPOINT ["node","statuspage.js"]
+COPY --from=docker.rubend.nl/statuspage-build / .
