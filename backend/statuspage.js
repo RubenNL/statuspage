@@ -4,10 +4,6 @@ const modules=require('./tasks');
 function parseActions(actions) {
 	return actions.map(action => {
 		if(!action.data) action.data = modules[action.module](...action.args);
-		if(action.data.eval) {
-			action.data.call=eval(action.data.eval);
-			delete action.data.eval;
-		}
 		if(action.after) action.after=parseActions(action.after);
 		return action;
 	})
