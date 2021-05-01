@@ -1,6 +1,6 @@
-net=require('net')
+const net=require('net')
 module.exports=function(host, port) {
-	return ()=>new Promise(function(resolve, reject) {
+	const call=()=>new Promise(function(resolve, reject) {
 		var timer = setTimeout(function() {
 			reject("timeout");
 			socket.end();
@@ -15,4 +15,8 @@ module.exports=function(host, port) {
 			reject(err);
 		});
 	});
+	return {
+		call,
+		name: `TCP on ${host}:${port}`,
+	}
 }

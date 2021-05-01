@@ -20,19 +20,19 @@ wss.on('connection', function connection(ws) {
 	ws.send({type:'actions',actions});
 	function cancelActions(actions,trace) {
 		actions.map(task=>{
-			ws.send({type:"status",name:task.name,trace,status:"CANCELLED"})
-			if(task.after) cancelActions(task.after,[...trace,task.name])
+			ws.send({type:"status",name:task.data.name,trace,status:"CANCELLED"})
+			if(task.after) cancelActions(task.after,[...trace,task.data.toString])
 		})
 	}
 	function doActionList(actions,trace) {
 		actions=actions.map(task=>{
-			ws.send({type:"status",name:task.name,trace,status:"STARTED"})
-			return task.promise().then(response=>{
-				ws.send({type:"status",name:task.name,trace,status:"SUCCESS",response})
-				return task.after?doActionList(task.after,[...trace,task.name]):null;
+			ws.send({type:"status",name:task.data.name,trace,status:"STARTED"})
+			return task.data.call().then(response=>{
+				ws.send({type:"status",name:task.data.name,trace,status:"SUCCESS",response})
+				return task.after?doActionList(task.after,[...trace,task.data.toString]):null;
 			},err=>{
-				ws.send({type:"status",name:task.name,trace,status:"ERROR",response:err})
-				return task.after?cancelActions(task.after,[...trace,task.name]):null;
+				ws.send({type:"status",name:task.data.name,trace,status:"ERROR",response:err})
+				return task.after?cancelActions(task.after,[...trace,task.data.toString]):null;
 			})
 		})
 		return Promise.allSettled(actions);

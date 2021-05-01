@@ -8,7 +8,7 @@
           <v-icon v-if="status=='SUCCESS'">mdi-check</v-icon>
           <v-icon v-if="status=='ERROR'">mdi-alert-circle</v-icon>
           <v-icon v-if="status=='CANCELLED'">mdi-minus-circle</v-icon>
-          {{item.name}}
+          {{item.data.name}}
         </v-btn>
       </template>
       <v-card>{{response}}</v-card>
@@ -33,7 +33,7 @@
     },
     created() {
       eventBus.$on('data', data => {
-        if(data.name!=this.item.name) return;
+        if(data.name!=this.item.data.name) return;
         console.log(data.name,data);
         if(data.type=="status") {
           this.status=data.status;
