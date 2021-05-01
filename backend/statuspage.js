@@ -1,5 +1,13 @@
 const fs=require('fs')
-const actions=require('./config.js');
+let {modules,actions}=require('./config.js');
+function parseActions(actions) {
+	return actions.map(action => {
+		if(!action.data) action.data = modules[action.module](...action.args);
+		if(action.after) action.after=parseActions(action.after);
+		return action;
+	})
+}
+actions=parseActions(actions);
 const server=require('http').createServer(function (req, res) {
 	fs.readFile(__dirname + "/dist/"+ req.url, function (err,data) {
 		if (err) {
