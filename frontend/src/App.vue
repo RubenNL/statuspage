@@ -9,7 +9,7 @@
     </v-app-bar>
 
     <v-main>
-      <Item v-for="item in items" :key="item.name" :item="item"/>
+      <Item :item="items"/>
     </v-main>
   </v-app>
 </template>
@@ -27,7 +27,7 @@ export default {
   data() {
     return {
       ws:null,
-      items:[],
+      items:{data:{name:"loading..."}},
     }
   },
   mounted(){
@@ -36,7 +36,7 @@ export default {
       const data=JSON.parse(event.data);
       eventBus.$emit('data',data);
       if(data.type=="actions") {
-        this.items=data.actions;
+        this.items={data:{name:"TOP"},after:data.actions};
       }
     }
   }
