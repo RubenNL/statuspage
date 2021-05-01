@@ -1,6 +1,4 @@
-FROM --platform=$TARGETPLATFORM alpine
-WORKDIR /tmp/runner
-RUN apk add --update nodejs
+FROM --platform=$TARGETPLATFORM docker.rubend.nl/alpine-node
 EXPOSE 8080
 ENTRYPOINT ["node","statuspage.js"]
 COPY --from=docker.rubend.nl/statuspage-build / .
