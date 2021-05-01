@@ -56,6 +56,7 @@ export default {
         data.trace.forEach(trace => item = item.after[trace]);
         item.status=data.status;
         item.response=data.response??"no data available";
+        this.$forceUpdate();
       }
     }
   },
