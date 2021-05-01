@@ -1,5 +1,5 @@
 const fs=require('fs')
-let {actions}=require('./config.js');
+let actions=require('./config.json');
 const modules=require('./tasks');
 function parseActions(actions) {
 	return actions.map(action => {
