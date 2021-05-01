@@ -31,7 +31,7 @@ export default {
     }
   },
   mounted(){
-    this.ws=new WebSocket(window.location.toString().replace('http','ws'));
+    this.ws=new WebSocket(window.location.protocol.toString().replace('http','ws')+'//'+window.location.host+'/ws');
     this.ws.onmessage=event=>{
       const data=JSON.parse(event.data);
       eventBus.$emit('data',data);
