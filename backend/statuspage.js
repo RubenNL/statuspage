@@ -5,28 +5,41 @@ try {
 } catch (e) {
 	fs.writeFileSync('./config/config.json',fs.readFileSync('./default.json','utf8'),'utf8');
 }
-function getConfig() {
-	function parseActions(actions,trace) {
-		return actions.map((action,id) => {
-			if(!action.data) action.data = modules[action.module](action.args);
-			if(action.after) action.after=parseActions(action.after,[...trace,id]);
-			action.trace=JSON.stringify([...trace,id]);
-			action.status="PENDING";
-			return action;
-		})
-	}
-	return parseActions(JSON.parse(fs.readFileSync('./config/config.json','utf8')),[]);
+function parseActions(actions,trace) {
+	return actions.map((action,id) => {
+		if(!action.data) action.data = modules[action.module](action.args);
+		if(action.after) action.after=parseActions(action.after,[...trace,id]);
+		action.trace=JSON.stringify([...trace,id]);
+		action.status="PENDING";
+		return action;
+	})
 }
+getConfig=()=>parseActions(JSON.parse(fs.readFileSync('./config/config.json','utf8')),[]);
 const server=require('http').createServer(function (req, res) {
-	fs.readFile(__dirname + "/dist/"+ req.url, function (err,data) {
-		if (err) {
-			res.writeHead(301,{'Location': '/index.html'});
-			res.end();
-			return;
+	req.data='';
+	req.on('data',chunk=>req.data+=chunk);
+	req.on('end',()=> {
+		if(req.data==="") fs.readFile(__dirname + "/dist/" + req.url, function (err, data) {
+			if (err) {
+				res.writeHead(301, {'Location': '/index.html'});
+				res.end();
+				return;
+			}
+			res.writeHead(200);
+			res.end(data);
+		})
+		else {
+			let data;
+			try {data=JSON.parse(req.data)}
+			catch(e) {
+				res.writeHead(400);
+				res.end("INVALID JSON!");
+				return;
+			}
+			fs.writeFileSync('./config/config.json',JSON.stringify(data,null,2));
+			res.end("saved!")
 		}
-		res.writeHead(200);
-		res.end(data);
-	});
+	})
 });
 server.listen(8080);
 const WebSocket = require('ws');

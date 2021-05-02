@@ -112,7 +112,11 @@ export default {
         return item;
       })
       const filtered=deleteUnneeded(JSON.parse(JSON.stringify(this.items)));
-      console.log(filtered);
+      fetch('/api',{
+        method:'POST',
+        body:JSON.stringify(filtered),
+      }).then(res=>res.text()).then(alert).then(()=>location.reload())
+      .catch(alert);
     },
     generateLink() {
       window.location.search=encodeURIComponent(JSON.stringify({
