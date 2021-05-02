@@ -5,15 +5,17 @@ try {
 } catch (e) {
 	fs.writeFileSync('./config/config.json',fs.readFileSync('./default.json','utf8'),'utf8');
 }
-const config=parseActions(JSON.parse(fs.readFileSync('./config/config.json','utf8')),[]);
-function parseActions(actions,trace) {
-	return actions.map((action,id) => {
-		if(!action.data) action.data = modules[action.module](action.args);
-		if(action.after) action.after=parseActions(action.after,[...trace,id]);
-		action.trace=JSON.stringify([...trace,id]);
-		action.status="PENDING";
-		return action;
-	})
+function getConfig() {
+	function parseActions(actions,trace) {
+		return actions.map((action,id) => {
+			if(!action.data) action.data = modules[action.module](action.args);
+			if(action.after) action.after=parseActions(action.after,[...trace,id]);
+			action.trace=JSON.stringify([...trace,id]);
+			action.status="PENDING";
+			return action;
+		})
+	}
+	return parseActions(JSON.parse(fs.readFileSync('./config/config.json','utf8')),[]);
 }
 const server=require('http').createServer(function (req, res) {
 	fs.readFile(__dirname + "/dist/"+ req.url, function (err,data) {
@@ -30,6 +32,7 @@ server.listen(8080);
 const WebSocket = require('ws');
 const wss = new WebSocket.Server({ server });
 wss.on('connection', function connection(ws) {
+	const config=getConfig();
 	ws.oldSend=ws.send;
 	ws.send=data=>ws.oldSend(JSON.stringify(data));
 	ws.send({type:'modules',modules:Object.fromEntries(Object.entries(modules).map(module=>[module[0],{help:module[1].help,info:module[1].info}]))});
