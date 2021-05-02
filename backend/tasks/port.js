@@ -1,5 +1,5 @@
 const net=require('net')
-module.exports=function(host, port) {
+module.exports=function({host, port}) {
 	const call=()=>new Promise(function(resolve, reject) {
 		var timer = setTimeout(function() {
 			reject("timeout");

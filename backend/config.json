@@ -1,10 +1,10 @@
 [
-	{"module": "dig","args": ["7.7.7.7","google.com"],"after": [
-		{"module": "dig","args": ["123.123.123.123","google.com"]}
+	{"module": "dig","args": {"server": "7.7.7.7","host": "google.com"},"after": [
+		{"module": "dig","args": {"server": "123.123.123.123","host": "google.com"}}
 	]},
-	{"module": "port","args": ["google.com","80"],"after": [
-		{"module": "delay","args": [10000],"after": [
-			{"module": "dig","args": ["8.8.8.8","google.com"]}
+	{"module": "port","args": {"host": "google.com","port": "80"},"after": [
+		{"module": "delay","args": {"ms": 10000},"after": [
+			{"module": "dig","args": {"server": "8.8.8.8","host": "google.com"}}
 		]}
 	]}
 ]
