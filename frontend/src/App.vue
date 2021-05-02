@@ -4,8 +4,11 @@
       app
       color="primary"
       dark
+      dense
     >
-      Hoi!
+      {{ header }}
+      <v-spacer/>
+      {{ new Date(date).toLocaleString('nl-NL') }}
     </v-app-bar>
 
     <v-main>
@@ -31,6 +34,7 @@
               <v-icon v-if="item.status==='CANCELLED'">mdi-minus-circle</v-icon>
             </template>
           </v-treeview>
+          <v-btn @click="generateLink">generateLink</v-btn>
         </v-col>
         <v-divider vertical></v-divider>
         <v-col>
@@ -61,9 +65,19 @@ export default {
       ws:null,
       items:[],
       active: [],
+      header:'Live',
+      date: +new Date(),
     }
   },
   mounted(){
+    if(document.location.search.split('?')[1]) {
+      const data=JSON.parse(decodeURIComponent(document.location.search.split('?')[1]))
+      this.modules=data.modules;
+      this.items=data.items;
+      this.header=data.header;
+      this.date=data.date;
+      return;
+    }
     this.ws=new WebSocket(window.location.protocol.toString().replace('http','ws')+'//'+window.location.host+'/ws');
     this.ws.onmessage=event=>{
       const data=JSON.parse(event.data);
@@ -98,6 +112,14 @@ export default {
       })
       const filtered=deleteUnneeded(JSON.parse(JSON.stringify(this.items)));
       console.log(filtered);
+    },
+    generateLink() {
+      window.location.search=encodeURIComponent(JSON.stringify({
+        items:this.items,
+        modules:this.modules,
+        header:prompt('header?'),
+        date: this.date,
+      }));
     }
   }
 };
