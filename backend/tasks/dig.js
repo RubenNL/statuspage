@@ -7,3 +7,8 @@ module.exports=function({server,host}) {
 		name: `DNS request to ${server} for ${host}`,
 	}
 }
+module.exports.help={
+	server:"server to send request to",
+	host: "domain name to resolve",
+}
+module.exports.info="Do a DNS A request to server for host."

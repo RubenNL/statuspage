@@ -20,3 +20,8 @@ module.exports=function({host, port}) {
 		name: `TCP on ${host}:${port}`,
 	}
 }
+module.exports.help={
+	host:"server to test",
+	port:"port to check",
+}
+module.exports.info="Do a TCP port check"

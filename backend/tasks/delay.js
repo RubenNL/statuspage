@@ -4,3 +4,7 @@ module.exports=function({ms}) {
 		name: `delay of ${ms}ms`,
 	}
 }
+module.exports.help={
+	ms:"1000th seconds to wait.",
+}
+module.exports.info="wait specified time."

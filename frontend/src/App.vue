@@ -38,7 +38,10 @@
           <code>{{selected.response}}</code>
           <v-card>
             <v-card-text>
-              <v-select v-model="selected.module" :items="modules"/>
+              <v-select v-model="selected.module" :items="Object.keys(modules)" persistent-hint :hint="selected.module?modules[selected.module].info:''"/>
+              <div v-if="selected.module" >
+                <v-text-field v-for="(text, name) in modules[selected.module].help" v-model="selected.args[name]" :key="name" :label="name" :hint="text" persistent-hint/>
+              </div>
             </v-card-text>
           </v-card>
           <v-btn @click="save">save</v-btn>
@@ -54,7 +57,7 @@ export default {
 
   data() {
     return {
-      modules: [],
+      modules: {},
       ws:null,
       items:[],
       active: [],
