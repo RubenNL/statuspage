@@ -24,11 +24,11 @@
             open-all
           >
             <template v-slot:prepend="{ item }">
-              <v-progress-circular indeterminate v-if="item.status=='STARTED'"/>
-              <v-icon v-if="item.status=='PENDING'">mdi-timer-sand</v-icon>
-              <v-icon v-if="item.status=='SUCCESS'">mdi-check</v-icon>
-              <v-icon v-if="item.status=='ERROR'">mdi-alert-circle</v-icon>
-              <v-icon v-if="item.status=='CANCELLED'">mdi-minus-circle</v-icon>
+              <v-progress-circular indeterminate v-if="item.status==='STARTED'"/>
+              <v-icon v-if="item.status==='PENDING'">mdi-timer-sand</v-icon>
+              <v-icon v-if="item.status==='SUCCESS'">mdi-check</v-icon>
+              <v-icon v-if="item.status==='ERROR'">mdi-alert-circle</v-icon>
+              <v-icon v-if="item.status==='CANCELLED'">mdi-minus-circle</v-icon>
             </template>
           </v-treeview>
         </v-col>
@@ -67,11 +67,11 @@ export default {
     this.ws=new WebSocket(window.location.protocol.toString().replace('http','ws')+'//'+window.location.host+'/ws');
     this.ws.onmessage=event=>{
       const data=JSON.parse(event.data);
-      if(data.type=="modules") this.modules=data.modules;
-      if(data.type=="actions") {
+      if(data.type==="modules") this.modules=data.modules;
+      if(data.type==="actions") {
         console.dir(JSON.parse(JSON.stringify(data.actions)));
         this.items=data.actions;
-      } else if(data.type=="status") {
+      } else if(data.type==="status") {
         let item = this.items[data.trace.shift()];
         data.trace.forEach(trace => item = item.after[trace]);
         item.status=data.status;

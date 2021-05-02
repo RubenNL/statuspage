@@ -1,11 +1,11 @@
 const net=require('net')
 module.exports=function({host, port}) {
 	const call=()=>new Promise(function(resolve, reject) {
-		var timer = setTimeout(function() {
+		const timer = setTimeout(function() {
 			reject("timeout");
 			socket.end();
 		}, 10000);
-		var socket = net.createConnection(port, host, function() {
+		const socket = net.createConnection(port, host, function() {
 			clearTimeout(timer);
 			resolve();
 			socket.end();
