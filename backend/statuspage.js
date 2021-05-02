@@ -9,6 +9,7 @@ function parseActions(actions,trace) {
 	return actions.map((action,id) => {
 		if(!action.data) action.data = modules[action.module](action.args);
 		if(action.after) action.after=parseActions(action.after,[...trace,id]);
+		else action.after=[];
 		action.trace=JSON.stringify([...trace,id]);
 		action.status="PENDING";
 		return action;

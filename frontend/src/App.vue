@@ -46,11 +46,13 @@
               <div v-if="selected.module" >
                 <v-text-field v-for="(text, name) in modules[selected.module].help" v-model="selected.args[name]" :key="name" :label="name" :hint="text" persistent-hint/>
               </div>
+              <v-btn @click="deleteLine">delete</v-btn>
             </v-card-text>
           </v-card>
           <v-btn @click="save">save</v-btn>
         </v-col>
       </v-row>
+      <v-btn @click="addLine">new task</v-btn>
     </v-main>
   </v-app>
 </template>
@@ -86,8 +88,7 @@ export default {
         console.dir(JSON.parse(JSON.stringify(data.actions)));
         this.items=data.actions;
       } else if(data.type==="status") {
-        let item = this.items[data.trace.shift()];
-        data.trace.forEach(trace => item = item.after[trace]);
+        const item=this.findByTrace(data.trace);
         item.status=data.status;
         item.response=data.response??"no data available";
         this.$forceUpdate();
@@ -101,12 +102,18 @@ export default {
     }
   },
   methods: {
+    findByTrace(trace) {
+      let item = this.items[trace.shift()];
+      trace.forEach(trace => item = item.after[trace]);
+      return item;
+    },
     save() {
       const deleteUnneeded=items=>items.map(item=>{
         delete item.data;
         delete item.trace;
         delete item.response;
         delete item.status;
+        if(item.after.length==0) delete item.after;
         item.args=Object.fromEntries(Object.entries(item.args).filter(arg=>this.modules[item.module].help[arg[0]]))
         if(item.after) item.after=deleteUnneeded(item.after);
         return item;
@@ -122,9 +129,30 @@ export default {
       window.location.search=encodeURIComponent(JSON.stringify({
         items:this.items,
         modules:this.modules,
-        header:prompt('header?'),
+        header:prompt('bericht?'),
         date: this.date,
       }));
+    },
+    addLine() {
+      const defaultLine={args:{},module:'',after:[]}
+      if(this.selected) {
+        defaultLine.trace=JSON.stringify([...JSON.parse(this.selected.trace),this.selected.after.length]);
+        this.selected.after.push(defaultLine);
+      } else {
+        defaultLine.trace=JSON.stringify([this.items.length]);
+        this.items.push(defaultLine);
+      }
+      this.$forceUpdate();
+    },
+    deleteLine() {
+      console.log(this.selected);
+      const trace=JSON.parse(this.selected.trace);
+      if(trace.length>1) {
+        trace.pop();
+        const item=this.findByTrace(trace);
+        item.after=item.after.filter((x) => x.trace !== this.selected.trace)
+      } else this.items=this.items.filter((x) => x.trace !== this.selected.trace)
+      this.$forceUpdate();
     }
   }
 };
