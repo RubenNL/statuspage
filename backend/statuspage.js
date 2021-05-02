@@ -1,5 +1,5 @@
 const fs=require('fs')
-const modules=require('./tasks');
+const modules=require('./modules');
 const config=parseActions(JSON.parse(fs.readFileSync('./config.json','utf8')),[]);
 function parseActions(actions,trace) {
 	return actions.map((action,id) => {
