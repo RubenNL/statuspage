@@ -37,7 +37,7 @@
           <v-btn @click="generateLink">generateLink</v-btn>
         </v-col>
         <v-divider vertical></v-divider>
-        <v-col>
+        <v-col v-if="selected">
           Output:
           <code>{{selected.response}}</code>
           <v-card>
@@ -96,7 +96,7 @@ export default {
   },
   computed: {
     selected() {
-      if (!this.active.length) return {response:"nothing selected."}
+      if (!this.active.length) return undefined;
       return this.active[0];
     }
   },
@@ -107,6 +107,7 @@ export default {
         delete item.trace;
         delete item.response;
         delete item.status;
+        item.args=Object.fromEntries(Object.entries(item.args).filter(arg=>this.modules[item.module].help[arg[0]]))
         if(item.after) item.after=deleteUnneeded(item.after);
         return item;
       })
