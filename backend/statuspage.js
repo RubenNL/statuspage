@@ -1,6 +1,11 @@
 const fs=require('fs')
 const modules=require('./modules');
-const config=parseActions(JSON.parse(fs.readFileSync('./config.json','utf8')),[]);
+try {
+	fs.readFileSync('./config/config.json','utf8')
+} catch (e) {
+	fs.writeFileSync('./config/config.json',fs.readFileSync('./default.json','utf8'),'utf8');
+}
+const config=parseActions(JSON.parse(fs.readFileSync('./config/config.json','utf8')),[]);
 function parseActions(actions,trace) {
 	return actions.map((action,id) => {
 		if(!action.data) action.data = modules[action.module](action.args);
