@@ -1,6 +1,6 @@
 const fs=require('fs')
-let actions=require('./config.json');
 const modules=require('./tasks');
+const config=parseActions(JSON.parse(fs.readFileSync('./config.json','utf8')),[]);
 function parseActions(actions,trace) {
 	return actions.map((action,id) => {
 		if(!action.data) action.data = modules[action.module](action.args);
@@ -10,7 +10,6 @@ function parseActions(actions,trace) {
 		return action;
 	})
 }
-actions=parseActions(actions,[]);
 const server=require('http').createServer(function (req, res) {
 	fs.readFile(__dirname + "/dist/"+ req.url, function (err,data) {
 		if (err) {
@@ -29,26 +28,29 @@ wss.on('connection', function connection(ws) {
 	ws.oldSend=ws.send;
 	ws.send=data=>ws.oldSend(JSON.stringify(data));
 	ws.send({type:'modules',modules:Object.fromEntries(Object.entries(modules).map(module=>[module[0],{help:module[1].help,info:module[1].info}]))});
-	ws.send({type:'actions',actions});
+	ws.send({type:'actions',actions:config});
 	function cancelActions(actions,trace) {
 		actions.map((task,id)=>{
 			ws.send({type:"status",name:task.data.name,trace:[...trace,id],status:"CANCELLED"})
 			if(task.after) cancelActions(task.after,[...trace,id])
 		})
 	}
+	function sendStatus(trace,status,response) {
+		ws.send({type:"status",trace,status,response})
+	}
 	function doActionList(actions,outsideTrace) {
 		actions=actions.map((task,id)=>{
 			const trace=[...outsideTrace,id];
-			ws.send({type:"status",trace,status:"STARTED"})
+			sendStatus(trace,"STARTED","active...")
 			return task.data.call().then(response=>{
-				ws.send({type:"status",trace,status:"SUCCESS",response})
+				sendStatus(trace,"SUCCESS",response)
 				return task.after?doActionList(task.after,trace):null;
 			},err=>{
-				ws.send({type:"status",trace,status:"ERROR",response:err})
+				sendStatus(trace,"ERROR",err)
 				return task.after?cancelActions(task.after,trace):null;
 			})
 		})
 		return Promise.allSettled(actions);
 	}
-	doActionList(actions,[]).then(()=>ws.send('DONE'));
+	doActionList(config,[]).then(()=>ws.send('DONE'));
 });
