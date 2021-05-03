@@ -58,6 +58,8 @@
 </template>
 
 <script>
+import jsonurl from 'json-url';
+const compress = jsonurl('lzw');
 export default {
   name: 'App',
 
@@ -73,11 +75,12 @@ export default {
   },
   mounted(){
     if(document.location.search.split('?')[1]) {
-      const data=JSON.parse(decodeURIComponent(document.location.search.split('?')[1]))
-      this.modules=data.modules;
-      this.items=data.items;
-      this.header=data.header;
-      this.date=data.date;
+      compress.decompress(document.location.search.split('?')[1]).then(data => {
+        this.modules=data.modules;
+        this.items=data.items;
+        this.header=data.header;
+        this.date=data.date;
+      })
       return;
     }
     this.ws=new WebSocket(window.location.protocol.toString().replace('http','ws')+'//'+window.location.host+'/ws');
@@ -126,12 +129,12 @@ export default {
       .catch(alert);
     },
     generateLink() {
-      window.location.search=encodeURIComponent(JSON.stringify({
+      compress.compress({
         items:this.items,
         modules:this.modules,
         header:prompt('bericht?'),
         date: this.date,
-      }));
+      }).then(result => window.location.search=result);
     },
     addLine() {
       const defaultLine={args:{},module:'',after:[]}

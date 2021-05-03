@@ -20,7 +20,7 @@ const server=require('http').createServer(function (req, res) {
 	req.data='';
 	req.on('data',chunk=>req.data+=chunk);
 	req.on('end',()=> {
-		if(req.data==="") fs.readFile(__dirname + "/dist/" + req.url, function (err, data) {
+		if(req.data==="") fs.readFile(__dirname + "/dist/" + req.url.split('?')[0], function (err, data) {
 			if (err) {
 				res.writeHead(301, {'Location': '/index.html'});
 				res.end();
