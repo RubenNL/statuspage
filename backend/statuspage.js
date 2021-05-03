@@ -60,13 +60,13 @@ wss.on('connection', function connection(ws) {
 	function sendStatus(trace,status,response) {
 		ws.send({type:"status",trace,status,response})
 	}
-	function doActionList(actions,outsideTrace) {
+	function doActionList(actions,outsideTrace,response) {
 		actions=actions.map((task,id)=>{
 			const trace=[...outsideTrace,id];
 			sendStatus(trace,"STARTED","active...")
-			return task.data.call().then(response=>{
+			return task.data.call(response).then(response=>{
 				sendStatus(trace,"SUCCESS",response)
-				return task.after?doActionList(task.after,trace):null;
+				return task.after?doActionList(task.after,trace,response):null;
 			},err=>{
 				sendStatus(trace,"ERROR",err)
 				return task.after?cancelActions(task.after,trace):null;
