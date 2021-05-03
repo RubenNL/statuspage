@@ -20,7 +20,6 @@
             activatable
             transition
             item-children="after"
-            item-text="data.name"
             item-key="trace"
             :active.sync="active"
             return-object
@@ -33,6 +32,9 @@
               <v-icon v-if="item.status==='ERROR'">mdi-alert-circle</v-icon>
               <v-icon v-if="item.status==='CANCELLED'">mdi-minus-circle</v-icon>
             </template>
+            <template v-slot:label="{ item }">
+              {{item.name || (item.data?item.data.name:"new module")}}
+            </template>
           </v-treeview>
           <v-btn @click="generateLink">generateLink</v-btn>
         </v-col>
@@ -43,6 +45,7 @@
           <v-card>
             <v-card-text>
               <v-select v-model="selected.module" :items="Object.keys(modules)" persistent-hint :hint="selected.module?modules[selected.module].info:''"/>
+              <v-text-field v-model="selected.name" label="name"/>
               <div v-if="selected.module" >
                 <v-text-field v-for="(text, name) in modules[selected.module].help" v-model="selected.args[name]" :key="name" :label="name" :hint="text" persistent-hint/>
               </div>
@@ -117,6 +120,7 @@ export default {
         delete item.response;
         delete item.status;
         if(item.after.length==0) delete item.after;
+        if(item.name!=null&&item.name.length===0) delete item.name;
         item.args=Object.fromEntries(Object.entries(item.args).filter(arg=>this.modules[item.module].help[arg[0]]))
         if(item.after) item.after=deleteUnneeded(item.after);
         return item;
