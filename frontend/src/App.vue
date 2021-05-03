@@ -62,7 +62,7 @@
 
 <script>
 import jsonurl from 'json-url';
-const compress = jsonurl('lzw');
+const compress = jsonurl('lzma');
 export default {
   name: 'App',
 
