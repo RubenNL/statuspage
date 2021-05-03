@@ -36,50 +36,29 @@
               {{item.name || (item.data?item.data.name:"new module")}}
             </template>
           </v-treeview>
-          <v-dialog width="500">
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn v-bind="attrs" v-on="on">Generate link</v-btn>
-            </template>
-            <v-card>
-              <v-card-title>generate link</v-card-title>
-              <v-card-text>
-                <v-switch v-for="(value,id) in link.toggles" :key="id" v-model="link.toggles[id]" :label="id"/>
-                <v-text-field v-model="link.text" label="extra info"/>
-              </v-card-text>
-              <v-card-actions>
-                <v-btn @click="generateLink">generateLink</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
+          <v-btn @click="addLine">new task</v-btn>
+          <GenerateLink :date="date" :items="items" :compress="compress"/>
+          <v-btn @click="save">save</v-btn>
         </v-col>
         <v-divider vertical></v-divider>
         <v-col v-if="selected">
-          Output:
-          <pre><code>{{selected.response}}</code></pre>
-          <v-card>
-            <v-card-text>
-              <v-select v-model="selected.module" :items="Object.keys(modules)" persistent-hint :hint="selected.module?modules[selected.module].info:''"/>
-              <v-text-field v-model="selected.name" label="name"/>
-              <div v-if="selected.module" >
-                <v-text-field v-for="(text, name) in modules[selected.module].help" v-model="selected.args[name]" :key="name" :label="name" :hint="text" persistent-hint/>
-              </div>
-              <v-btn @click="deleteLine">delete</v-btn>
-            </v-card-text>
-          </v-card>
-          <v-btn @click="save">save</v-btn>
+          <TaskEditor v-bind:modules="modules" v-bind:item="selected"/>
         </v-col>
       </v-row>
-      <v-btn @click="addLine">new task</v-btn>
     </v-main>
   </v-app>
 </template>
 
 <script>
 import jsonurl from 'json-url';
-const compress = jsonurl('lzma');
+import TaskEditor from './components/TaskEditor'
+import GenerateLink from "@/components/GenerateLink";
 export default {
   name: 'App',
-
+  components: {
+    GenerateLink,
+    TaskEditor,
+  },
   data() {
     return {
       modules: {},
@@ -88,16 +67,13 @@ export default {
       active: [],
       header:'Live',
       date: +new Date(),
-      link: {
-        toggles:{success:false,error:true},
-        text:'',
-      },
+      compress: jsonurl('lzma'),
     }
   },
   mounted(){
     fetch('/api/modules').then(response=>response.json()).then(modules=>{this.modules=modules});
     if(document.location.search.split('?')[1]) {
-      compress.decompress(document.location.search.split('?')[1]).then(data => {
+      this.compress.decompress(document.location.search.split('?')[1]).then(data => {
         this.items=data.items;
         this.header=data.header;
         this.date=data.date;
@@ -150,31 +126,10 @@ export default {
       }).then(res=>res.text()).then(alert).then(()=>location.reload())
       .catch(alert);
     },
-    generateLink() {
-      const removeResponse=items=>items.map(item=>{
-        if(item.status==="PENDING" || item.status==="CANCELLED") delete item.response;
-        if(item.status==="ERROR" && !this.link.error) delete item.response;
-        if(item.status==="SUCCESS" && !this.link.success) delete item.response;
-        if(item.after && item.after.length===0) delete item.after;
-        if(item.after) item.after=removeResponse(item.after);
-        return item;
-      })
-      compress.compress({
-        items:removeResponse(this.items),
-        header:this.link.text,
-        date: this.date,
-      }).then(result => window.location.search=result);
-    },
     addLine() {
       const defaultLine={args:{},module:'',after:[]}
-      if(this.selected) {
-        defaultLine.trace=JSON.stringify([...JSON.parse(this.selected.trace),this.selected.after.length]);
-        this.selected.after.push(defaultLine);
-      } else {
-        defaultLine.trace=JSON.stringify([this.items.length]);
-        this.items.push(defaultLine);
-      }
-      this.$forceUpdate();
+      defaultLine.trace=JSON.stringify([this.items.length]);
+      this.items.push(defaultLine);
     },
     deleteLine() {
       console.log(this.selected);
