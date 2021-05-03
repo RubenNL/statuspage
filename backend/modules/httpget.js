@@ -1,11 +1,11 @@
 module.exports=function({url}) {
-	const module=url.split(':')[0]=="http"?require('http'):require('https');
+	const module=url.split(':')[0]==="http"?require('http'):require('https');
 	const call=()=>new Promise((resolve,reject)=>{
 		module.get(url,res=>{
-			data='';
+			let data='';
 			res.on('data',chunk=>data+=chunk);
 			res.on('end',()=>{
-				if(res.statusCode==200) resolve(data);
+				if(res.statusCode===200) resolve(data);
 				else reject({statusCode:res.statusCode,data})
 			})
 		})

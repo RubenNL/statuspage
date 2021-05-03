@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import jsonurl from 'json-url';
+import jsonUrl from 'json-url';
 import TaskEditor from './components/TaskEditor'
 import GenerateLink from "./components/GenerateLink";
 import Treeview from "./components/Treeview"
@@ -48,7 +48,7 @@ export default {
       active: [],
       header:'Live',
       date: +new Date(),
-      compress: jsonurl('lzma'),
+      compress: jsonUrl('lzma'),
     }
   },
   mounted(){
@@ -94,7 +94,7 @@ export default {
         delete item.trace;
         delete item.response;
         delete item.status;
-        if(item.after.length==0) delete item.after;
+        if(item.after.length===0) delete item.after;
         if(item.name!=null&&item.name.length===0) delete item.name;
         item.args=Object.fromEntries(Object.entries(item.args).filter(arg=>this.modules[item.module].help[arg[0]]))
         if(item.after) item.after=deleteUnneeded(item.after);

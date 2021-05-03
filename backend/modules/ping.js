@@ -1,4 +1,3 @@
-const util = require('util');
 const spawn = require('child_process').spawn;
 module.exports=function({host}) {
 	const call=()=>new Promise((resolve,reject)=>{
@@ -7,7 +6,7 @@ module.exports=function({host}) {
 		ping.stdout.on('data',chunk=>data+=chunk)
 		ping.stderr.on('data',chunk=>data+=chunk)
 		ping.on('close',code=>{
-			if(code==0) resolve(data);
+			if(code===0) resolve(data);
 			else reject(data);
 		})
 	})

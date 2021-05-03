@@ -6,7 +6,7 @@
     <v-card>
       <v-card-title>generate link</v-card-title>
       <v-card-text>
-        <v-switch v-for="(value,id) in link.toggles" :key="id" v-model="link.toggles[id]" :label="id"/>
+        <v-switch v-for="id in Object.keys(link.toggles)" :key="id" v-model="link.toggles[id]" :label="id"/>
         <v-text-field v-model="link.text" label="extra info"/>
       </v-card-text>
       <v-card-actions>

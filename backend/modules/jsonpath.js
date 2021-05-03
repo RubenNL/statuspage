@@ -1,4 +1,4 @@
-var jp = require('jsonpath');
+const jp = require('jsonpath');
 module.exports=function({path}) {
 	const call=data=>new Promise((resolve,reject)=>{
 		try {
