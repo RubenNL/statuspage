@@ -1,15 +1,15 @@
 module.exports=function() {
 	const call=data=>new Promise((resolve,reject)=>{
 		try {
-			resolve(JSON.parse(data));
+			resolve(JSON.stringify(data));
 		} catch(e) {
 			reject(e.toString());
 		}
 	})
 	return {
 		call,
-		name: `parse json`,
+		name: `stringify json`,
 	}
 }
 module.exports.help={}
-module.exports.info="parses json"
+module.exports.info="stringifies json"
