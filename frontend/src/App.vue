@@ -39,7 +39,7 @@
         <v-divider vertical></v-divider>
         <v-col v-if="selected">
           Output:
-          <code>{{selected.response}}</code>
+          <pre><code>{{selected.response}}</code></pre>
           <v-card>
             <v-card-text>
               <v-select v-model="selected.module" :items="Object.keys(modules)" persistent-hint :hint="selected.module?modules[selected.module].info:''"/>
