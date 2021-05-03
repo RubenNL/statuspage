@@ -77,9 +77,9 @@ export default {
     }
   },
   mounted(){
+    fetch('/api/modules').then(response=>response.json()).then(modules=>{this.modules=modules});
     if(document.location.search.split('?')[1]) {
       compress.decompress(document.location.search.split('?')[1]).then(data => {
-        this.modules=data.modules;
         this.items=data.items;
         this.header=data.header;
         this.date=data.date;
@@ -89,7 +89,6 @@ export default {
     this.ws=new WebSocket(window.location.protocol.toString().replace('http','ws')+'//'+window.location.host+'/ws');
     this.ws.onmessage=event=>{
       const data=JSON.parse(event.data);
-      if(data.type==="modules") this.modules=data.modules;
       if(data.type==="actions") {
         console.dir(JSON.parse(JSON.stringify(data.actions)));
         this.items=data.actions;
@@ -100,6 +99,7 @@ export default {
         this.$forceUpdate();
       }
     }
+    setTimeout(()=>console.log(this.modules),1000);
   },
   computed: {
     selected() {
@@ -135,7 +135,6 @@ export default {
     generateLink() {
       compress.compress({
         items:this.items,
-        modules:this.modules,
         header:prompt('bericht?'),
         date: this.date,
       }).then(result => window.location.search=result);

@@ -20,7 +20,8 @@ const server=require('http').createServer(function (req, res) {
 	req.data='';
 	req.on('data',chunk=>req.data+=chunk);
 	req.on('end',()=> {
-		if(req.data==="") fs.readFile(__dirname + "/dist/" + req.url.split('?')[0], function (err, data) {
+		if(req.url==="/api/modules") res.end(JSON.stringify(Object.fromEntries(Object.entries(modules).map(module=>[module[0],{help:module[1].help,info:module[1].info}]))));
+		else if(req.data==="") fs.readFile(__dirname + "/dist/" + req.url.split('?')[0], function (err, data) {
 			if (err) {
 				res.writeHead(301, {'Location': '/index.html'});
 				res.end();
@@ -49,7 +50,6 @@ wss.on('connection', function connection(ws) {
 	const config=getConfig();
 	ws.oldSend=ws.send;
 	ws.send=data=>ws.oldSend(JSON.stringify(data));
-	ws.send({type:'modules',modules:Object.fromEntries(Object.entries(modules).map(module=>[module[0],{help:module[1].help,info:module[1].info}]))});
 	ws.send({type:'actions',actions:config});
 	function cancelActions(actions,trace) {
 		actions.map((task,id)=>{

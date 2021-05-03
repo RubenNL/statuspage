@@ -6,11 +6,11 @@ module.exports = {
     port: 8000,
     proxy: {
       '/ws': {
-        target: 'ws://localhost:8080/ws',
+        target: 'ws://localhost:8080',
         ws: true
       },
       '/api': {
-        target: 'http://localhost:8080/api',
+        target: 'http://localhost:8080',
       },
     },
   }
