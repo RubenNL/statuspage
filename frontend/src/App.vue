@@ -14,35 +14,14 @@
     <v-main>
       <v-row>
         <v-col>
-          <v-treeview
-            v-if="items.length"
-            :items="items"
-            activatable
-            transition
-            item-children="after"
-            item-key="trace"
-            :active.sync="active"
-            return-object
-            open-all
-          >
-            <template v-slot:prepend="{ item }">
-              <v-progress-circular indeterminate v-if="item.status==='STARTED'"/>
-              <v-icon v-if="item.status==='PENDING'">mdi-timer-sand</v-icon>
-              <v-icon v-if="item.status==='SUCCESS'">mdi-check</v-icon>
-              <v-icon v-if="item.status==='ERROR'">mdi-alert-circle</v-icon>
-              <v-icon v-if="item.status==='CANCELLED'">mdi-minus-circle</v-icon>
-            </template>
-            <template v-slot:label="{ item }">
-              {{item.name || (item.data?item.data.name:"new module")}}
-            </template>
-          </v-treeview>
+          <Treeview :items="items" @active="response=>this.active=response"/>
           <v-btn @click="addLine">new task</v-btn>
           <GenerateLink :date="date" :items="items" :compress="compress"/>
           <v-btn @click="save">save</v-btn>
         </v-col>
         <v-divider vertical></v-divider>
         <v-col v-if="selected">
-          <TaskEditor v-bind:modules="modules" v-bind:item="selected"/>
+          <TaskEditor v-bind:modules="modules" v-bind:item="selected" @deleteLine="deleteLine"/>
         </v-col>
       </v-row>
     </v-main>
@@ -52,12 +31,14 @@
 <script>
 import jsonurl from 'json-url';
 import TaskEditor from './components/TaskEditor'
-import GenerateLink from "@/components/GenerateLink";
+import GenerateLink from "./components/GenerateLink";
+import Treeview from "./components/Treeview"
 export default {
   name: 'App',
   components: {
     GenerateLink,
     TaskEditor,
+    Treeview
   },
   data() {
     return {
