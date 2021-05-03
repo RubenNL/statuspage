@@ -36,7 +36,21 @@
               {{item.name || (item.data?item.data.name:"new module")}}
             </template>
           </v-treeview>
-          <v-btn @click="generateLink">generateLink</v-btn>
+          <v-dialog width="500">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn v-bind="attrs" v-on="on">Generate link</v-btn>
+            </template>
+            <v-card>
+              <v-card-title>generate link</v-card-title>
+              <v-card-text>
+                <v-switch v-for="(value,id) in link.toggles" :key="id" v-model="link.toggles[id]" :label="id"/>
+                <v-text-field v-model="link.text" label="extra info"/>
+              </v-card-text>
+              <v-card-actions>
+                <v-btn @click="generateLink">generateLink</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
         </v-col>
         <v-divider vertical></v-divider>
         <v-col v-if="selected">
@@ -74,6 +88,10 @@ export default {
       active: [],
       header:'Live',
       date: +new Date(),
+      link: {
+        toggles:{success:false,error:true},
+        text:'',
+      },
     }
   },
   mounted(){
@@ -133,9 +151,17 @@ export default {
       .catch(alert);
     },
     generateLink() {
+      const removeResponse=items=>items.map(item=>{
+        if(item.status==="PENDING" || item.status==="CANCELLED") delete item.response;
+        if(item.status==="ERROR" && !this.link.error) delete item.response;
+        if(item.status==="SUCCESS" && !this.link.success) delete item.response;
+        if(item.after && item.after.length===0) delete item.after;
+        if(item.after) item.after=removeResponse(item.after);
+        return item;
+      })
       compress.compress({
-        items:this.items,
-        header:prompt('bericht?'),
+        items:removeResponse(this.items),
+        header:this.link.text,
         date: this.date,
       }).then(result => window.location.search=result);
     },
