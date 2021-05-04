@@ -71,6 +71,14 @@ export default {
         const item=this.findByTrace(data.trace);
         item.status=data.status;
         item.response=data.response??"no data available";
+        if(data.status==="ERROR") {
+          const trace=JSON.parse(JSON.stringify(data.trace));
+          while(trace.length>0) {
+            console.log(trace);
+            this.findByTrace(trace).childError=true;
+            trace.pop();
+          }
+        }
         this.$forceUpdate();
       }
     }
@@ -84,6 +92,7 @@ export default {
   },
   methods: {
     findByTrace(trace) {
+      trace=JSON.parse(JSON.stringify(trace));
       let item = this.items[trace.shift()];
       trace.forEach(trace => item = item.after[trace]);
       return item;

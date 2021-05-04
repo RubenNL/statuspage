@@ -8,14 +8,14 @@
       item-key="trace"
       :active.sync="active"
       return-object
-      open-all
   >
   <template v-slot:prepend="{ item }">
-    <v-progress-circular indeterminate v-if="item.status==='STARTED'"/>
-    <v-icon v-if="item.status==='PENDING'">mdi-timer-sand</v-icon>
-    <v-icon v-if="item.status==='SUCCESS'">mdi-check</v-icon>
     <v-icon v-if="item.status==='ERROR'">mdi-alert-circle</v-icon>
-    <v-icon v-if="item.status==='CANCELLED'">mdi-minus-circle</v-icon>
+    <v-icon v-else-if="item.childError">mdi-alert-circle-outline</v-icon>
+    <v-progress-circular indeterminate v-else-if="item.status==='STARTED'"/>
+    <v-icon v-else-if="item.status==='PENDING'">mdi-timer-sand</v-icon>
+    <v-icon v-else-if="item.status==='SUCCESS'">mdi-check</v-icon>
+    <v-icon v-else-if="item.status==='CANCELLED'">mdi-minus-circle-outline</v-icon>
   </template>
   <template v-slot:label="{ item }">
     {{item.name || (item.data?item.data.name:"new module")}}

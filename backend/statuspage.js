@@ -12,6 +12,7 @@ function parseActions(actions,trace) {
 		else action.after=[];
 		action.trace=JSON.stringify([...trace,id]);
 		action.status="PENDING";
+		action.childError=false;
 		return action;
 	})
 }
