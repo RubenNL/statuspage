@@ -8,6 +8,7 @@
       item-key="trace"
       :active.sync="active"
       return-object
+      :open="open"
   >
   <template v-slot:prepend="{ item }">
     <v-icon v-if="item.status==='ERROR'">mdi-alert-circle</v-icon>
@@ -27,6 +28,7 @@ export default {
   name: 'Treeview',
   props: {
     items: Array,
+    open: Array,
   },
   data() {
     return {

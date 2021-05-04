@@ -18,7 +18,7 @@
     <v-main>
       <v-row>
         <v-col>
-          <Treeview :items="items" @active="response=>this.active=response"/>
+          <Treeview :items="items" @active="response=>this.active=response" :open="open"/>
           <v-btn @click="addLine">new task</v-btn>
           <GenerateLink :date="date" :items="items" :compress="compress" :status="status"/>
           <v-btn @click="save">save</v-btn>
@@ -53,7 +53,8 @@ export default {
       header:'Live',
       date: +new Date(),
       compress: jsonUrl('lzma'),
-      status:'DOWNLOADING'
+      status:'DOWNLOADING',
+      open: [],
     }
   },
   mounted(){
@@ -71,7 +72,6 @@ export default {
     this.ws.onmessage=event=>{
       const data=JSON.parse(event.data);
       if(data.type==="actions") {
-        console.dir(JSON.parse(JSON.stringify(data.actions)));
         this.items=data.actions;
         this.status='ACTIVE';
       } else if(data.type==="status") {
@@ -81,13 +81,14 @@ export default {
         if(data.status==="ERROR") {
           const trace=JSON.parse(JSON.stringify(data.trace));
           while(trace.length>0) {
-            console.log(trace);
-            this.findByTrace(trace).childError=true;
+            const item=this.findByTrace(trace);
+            this.open=[item,...this.open];
+            item.childError=true;
             trace.pop();
           }
         }
         this.$forceUpdate();
-      } else if(data=="DONE") this.status="DONE";
+      } else if(data==="DONE") this.status="DONE";
     }
     this.ws.onclose=close=>{
       console.error(close);
@@ -97,7 +98,6 @@ export default {
       console.error(err);
       this.status="ERROR";
     }
-    setTimeout(()=>console.log(this.modules),1000);
   },
   computed: {
     selected() {
@@ -137,7 +137,6 @@ export default {
       this.items.push(defaultLine);
     },
     deleteLine() {
-      console.log(this.selected);
       const trace=JSON.parse(this.selected.trace);
       if(trace.length>1) {
         trace.pop();
