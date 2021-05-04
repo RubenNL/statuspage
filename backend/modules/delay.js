@@ -1,6 +1,6 @@
 module.exports=function({ms}) {
 	return {
-		call: () => new Promise(resolve=>setTimeout(resolve,ms)),
+		call: data => new Promise(resolve=>setTimeout(()=>resolve(data),ms)),
 		name: `delay of ${ms}ms`,
 	}
 }
