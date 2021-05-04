@@ -6,6 +6,10 @@
       dark
       dense
     >
+      <v-icon v-if="status==='DOWNLOADING'">mdi-download</v-icon>
+      <v-progress-circular indeterminate v-else-if="status==='ACTIVE'"/>
+      <v-icon v-else-if="status==='DONE'">mdi-check</v-icon>
+      <v-icon v-else-if="status==='ERROR'">mdi-alert-circle</v-icon>
       {{ header }}
       <v-spacer/>
       {{ new Date(date).toLocaleString('nl-NL') }}
@@ -16,7 +20,7 @@
         <v-col>
           <Treeview :items="items" @active="response=>this.active=response"/>
           <v-btn @click="addLine">new task</v-btn>
-          <GenerateLink :date="date" :items="items" :compress="compress"/>
+          <GenerateLink :date="date" :items="items" :compress="compress" :status="status"/>
           <v-btn @click="save">save</v-btn>
         </v-col>
         <v-divider vertical></v-divider>
@@ -49,6 +53,7 @@ export default {
       header:'Live',
       date: +new Date(),
       compress: jsonUrl('lzma'),
+      status:'DOWNLOADING'
     }
   },
   mounted(){
@@ -58,6 +63,7 @@ export default {
         this.items=data.items;
         this.header=data.header;
         this.date=data.date;
+        this.status=data.status;
       })
       return;
     }
@@ -67,6 +73,7 @@ export default {
       if(data.type==="actions") {
         console.dir(JSON.parse(JSON.stringify(data.actions)));
         this.items=data.actions;
+        this.status='ACTIVE';
       } else if(data.type==="status") {
         const item=this.findByTrace(data.trace);
         item.status=data.status;
@@ -80,7 +87,15 @@ export default {
           }
         }
         this.$forceUpdate();
-      }
+      } else if(data=="DONE") this.status="DONE";
+    }
+    this.ws.onclose=close=>{
+      console.error(close);
+      this.status='ERROR';
+    }
+    this.ws.onerror=err=>{
+      console.error(err);
+      this.status="ERROR";
     }
     setTimeout(()=>console.log(this.modules),1000);
   },

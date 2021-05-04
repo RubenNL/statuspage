@@ -23,6 +23,7 @@ export default {
     items:Array,
     date:Number,
     compress: Object,
+    status:String,
   },
   data() {
     return {
@@ -46,6 +47,7 @@ export default {
         items:removeResponse(this.items),
         header:this.link.text,
         date: this.date,
+        status: this.status,
       }).then(result => window.location.search=result);
     },
   }
