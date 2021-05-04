@@ -54,7 +54,6 @@ export default {
       date: +new Date(),
       compress: jsonUrl('lzma'),
       status:'DOWNLOADING',
-      open: [],
     }
   },
   mounted(){
@@ -78,15 +77,6 @@ export default {
         const item=this.findByTrace(data.trace);
         item.status=data.status;
         item.response=data.response??"no data available";
-        if(data.status==="ERROR") {
-          const trace=JSON.parse(JSON.stringify(data.trace));
-          while(trace.length>0) {
-            const item=this.findByTrace(trace);
-            this.open=[item,...this.open];
-            item.childError=true;
-            trace.pop();
-          }
-        }
         this.$forceUpdate();
       } else if(data==="DONE") this.status="DONE";
     }
@@ -103,6 +93,22 @@ export default {
     selected() {
       if (!this.active.length) return undefined;
       return this.active[0];
+    },
+    open() {
+      const openItems=[];
+      const doItems=(items)=>items.forEach(item=>{
+        doItems(item.after);
+        if(item.status==="SUCCESS") return;
+        const trace=JSON.parse(item.trace);
+        while(trace.length>0) {
+          openItems.push(this.findByTrace(trace));
+          trace.pop();
+        }
+        openItems.push(item);
+
+      })
+      doItems(this.items,null)
+      return openItems;
     }
   },
   methods: {
