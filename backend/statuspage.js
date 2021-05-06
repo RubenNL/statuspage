@@ -5,6 +5,11 @@ try {
 } catch (e) {
 	fs.writeFileSync('./config/config.json',fs.readFileSync('./default.json','utf8'),'utf8');
 }
+//----backwards compatibility
+const data=JSON.parse(fs.readFileSync('./config/config.json','utf8'))
+if(Array.isArray(data)) fs.writeFileSync('./config/config.json',JSON.stringify({actions:data},null,2));
+//---- end backwards compatibility
+
 function parseActions(actions,trace) {
 	return actions.map((action,id) => {
 		if(!action.data) action.data = modules[action.module](action.args);
@@ -51,7 +56,7 @@ wss.on('connection', function connection(ws) {
 	const config=getConfig();
 	ws.oldSend=ws.send;
 	ws.send=data=>ws.oldSend(JSON.stringify(data));
-	ws.send({type:'actions',actions:config});
+	ws.send({type:'actions',actions:config.actions});
 	function cancelActions(actions,trace) {
 		actions.map((task,id)=>{
 			ws.send({type:"status",name:task.data.name,trace:[...trace,id],status:"CANCELLED"})
@@ -75,5 +80,5 @@ wss.on('connection', function connection(ws) {
 		})
 		return Promise.allSettled(actions);
 	}
-	doActionList(config,[]).then(()=>ws.send('DONE'));
+	doActionList(config.actions,[]).then(()=>ws.send('DONE'));
 });

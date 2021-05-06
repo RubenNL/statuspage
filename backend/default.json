@@ -1,4 +1,4 @@
-[
+{"actions":[
 	{"module": "dig","args": {"server": "7.7.7.7","host": "google.com"},"after": [
 		{"module": "dig","args": {"server": "123.123.123.123","host": "google.com"}}
 	]},
@@ -8,4 +8,4 @@
 		]},
 		{"args": {"host": "google.com","port": 80},"module": "port"}
 	]}
-]
+]}
