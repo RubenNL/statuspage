@@ -7,7 +7,10 @@
         <v-select v-model="item.module" :items="Object.keys(modules)" persistent-hint :hint="item.module?modules[item.module].info:''"/>
         <v-text-field v-model="item.name" label="name"/>
         <div v-if="item.module" >
-          <v-text-field v-for="(text, name) in modules[item.module].help" v-model="item.args[name]" :key="name" :label="name" :hint="text" persistent-hint/>
+          <div v-for="(value, name) in modules[item.module].help" :key="name">
+            <v-text-field v-if="value.type?['text','number'].includes(value.type):true" v-model="item.args[name]" :key="name" :label="name" :hint="`${value.hint?value.hint:value}`" persistent-hint/>
+            <v-select v-if="value.type==='select'" :items="value.items" :label="name" :hint="value.hint" v-model="item.args[name]" persistent-hint/>
+          </div>
         </div>
       </v-card-text>
       <v-card-actions>

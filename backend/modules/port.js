@@ -22,6 +22,6 @@ module.exports=function({host, port}) {
 }
 module.exports.help={
 	host:"server to test",
-	port:"port to check",
+	port:{hint:"port to check",type:"port"},
 }
 module.exports.info="Do a TCP port check"
