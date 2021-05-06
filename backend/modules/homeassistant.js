@@ -7,6 +7,11 @@ module.exports=function({entity},moduleConfig) {
 		name: `get home assistant state for ${entity}`,
 	}
 }
+module.exports.defaultConfig={
+	host: "http://localhost",
+	port: "8384",
+	token: "PLACEHOLDER",
+}
 module.exports.help={
 	entity:"entity to check",
 }

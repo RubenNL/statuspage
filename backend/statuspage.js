@@ -5,10 +5,25 @@ try {
 } catch (e) {
 	fs.writeFileSync('./config/config.json',fs.readFileSync('./default.json','utf8'),'utf8');
 }
-//----backwards compatibility
-const data=JSON.parse(fs.readFileSync('./config/config.json','utf8'))
-if(Array.isArray(data)) fs.writeFileSync('./config/config.json',JSON.stringify({actions:data},null,2));
-//---- end backwards compatibility
+//----backwards compatibility step 1
+(()=>{
+	const data = JSON.parse(fs.readFileSync('./config/config.json', 'utf8'))
+	if (Array.isArray(data)) fs.writeFileSync('./config/config.json', JSON.stringify({actions: data,moduleConfig:{}}, null, 2));
+})();
+//---- end backwards compatibility step 1
+//---- backwards compatibility step 2
+(()=>{
+	const data = JSON.parse(fs.readFileSync('./config/config.json', 'utf8'))
+	let shouldSave=false;
+	Object.keys(modules).forEach(moduleKey=>{
+		if(modules[moduleKey].defaultConfig&&!data.moduleConfig[moduleKey]) {
+			shouldSave=true;
+			data.moduleConfig[moduleKey]=modules[moduleKey].defaultConfig;
+		}
+	})
+	if (shouldSave) fs.writeFileSync('./config/config.json', JSON.stringify(data, null, 2));
+})();
+//---- end backwards compatibility step 2
 
 function getConfig() {
 	function parseActions(actions,trace) {
