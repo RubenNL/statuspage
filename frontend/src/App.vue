@@ -97,7 +97,7 @@ export default {
     open() {
       const openItems=[];
       const doItems=(items)=>items.forEach(item=>{
-        doItems(item.after);
+        if(item.after) doItems(item.after);
         if(item.status==="SUCCESS") return;
         const trace=JSON.parse(item.trace);
         while(trace.length>0) {
