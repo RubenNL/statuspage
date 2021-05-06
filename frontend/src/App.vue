@@ -124,6 +124,7 @@ export default {
         delete item.trace;
         delete item.response;
         delete item.status;
+        delete item.childError;
         if(item.after.length===0) delete item.after;
         if(item.name!=null&&item.name.length===0) delete item.name;
         item.args=Object.fromEntries(Object.entries(item.args).filter(arg=>this.modules[item.module].help[arg[0]]))
@@ -133,7 +134,7 @@ export default {
       const filtered=deleteUnneeded(JSON.parse(JSON.stringify(this.items)));
       fetch('/api',{
         method:'POST',
-        body:JSON.stringify(filtered),
+        body:JSON.stringify({actions:filtered}),
       }).then(res=>res.text()).then(alert).then(()=>location.reload())
       .catch(alert);
     },

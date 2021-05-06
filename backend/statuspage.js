@@ -48,6 +48,7 @@ const server=require('http').createServer(function (req, res) {
 				res.end("INVALID JSON!");
 				return;
 			}
+			if(!data.moduleConfig) data.moduleConfig=JSON.parse(fs.readFileSync('./config/config.json','utf8')).moduleConfig;
 			fs.writeFileSync('./config/config.json',JSON.stringify(data,null,2));
 			res.end("saved!")
 		}
