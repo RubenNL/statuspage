@@ -2,7 +2,7 @@ const jp = require('jsonpath');
 module.exports=function({path}) {
 	const call=data=>new Promise((resolve,reject)=>{
 		try {
-			resolve(jp.query(data,path));
+			resolve(jp.query(data,path)[0]);
 		} catch(e) {
 			reject(e.toString());
 		}
