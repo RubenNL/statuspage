@@ -8,4 +8,4 @@
 		]},
 		{"args": {"host": "google.com","port": 80},"module": "port"}
 	]}
-]}
+],"moduleConfig": {}}

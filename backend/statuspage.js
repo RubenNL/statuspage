@@ -10,18 +10,22 @@ const data=JSON.parse(fs.readFileSync('./config/config.json','utf8'))
 if(Array.isArray(data)) fs.writeFileSync('./config/config.json',JSON.stringify({actions:data},null,2));
 //---- end backwards compatibility
 
-function parseActions(actions,trace) {
-	return actions.map((action,id) => {
-		if(!action.data) action.data = modules[action.module](action.args);
-		if(action.after) action.after=parseActions(action.after,[...trace,id]);
-		else action.after=[];
-		action.trace=JSON.stringify([...trace,id]);
-		action.status="PENDING";
-		action.childError=false;
-		return action;
-	})
+function getConfig() {
+	function parseActions(actions,trace) {
+		return actions.map((action,id) => {
+			if(!action.data) action.data = modules[action.module](action.args,data.moduleConfig[action.module]);
+			if(action.after) action.after=parseActions(action.after,[...trace,id]);
+			else action.after=[];
+			action.trace=JSON.stringify([...trace,id]);
+			action.status="PENDING";
+			action.childError=false;
+			return action;
+		})
+	}
+	const data=JSON.parse(fs.readFileSync('./config/config.json','utf8'));
+	data.actions=parseActions(data.actions,[]);
+	return data;
 }
-getConfig=()=>parseActions(JSON.parse(fs.readFileSync('./config/config.json','utf8')),[]);
 const server=require('http').createServer(function (req, res) {
 	req.data='';
 	req.on('data',chunk=>req.data+=chunk);

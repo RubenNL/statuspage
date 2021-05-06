@@ -1,6 +1,6 @@
 const HomeAssistant = require('homeassistant');
-const hass = new HomeAssistant(JSON.parse(require('fs').readFileSync('config/homeassistant.json')));
-module.exports=function({entity}) {
+module.exports=function({entity},moduleConfig) {
+	const hass = new HomeAssistant(moduleConfig);
 	const call=()=>hass.states.get(...entity.split('.'));
 	return {
 		call,
