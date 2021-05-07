@@ -8,7 +8,13 @@
         <v-text-field v-model="item.name" label="name"/>
         <div v-if="item.module" >
           <div v-for="(value, name) in modules[item.module].help" :key="name">
-            <v-text-field v-if="value.type?['text','number'].includes(value.type):true" v-model="item.args[name]" :key="name" :label="name" :hint="`${value.hint?value.hint:value}`" persistent-hint/>
+            <v-text-field v-if="value.type?value.type==='text':true" v-model="item.args[name]" :key="name" :label="name" :hint="`${value.hint?value.hint:value}`" persistent-hint/>
+            <v-text-field v-if="value.type==='number'" :rules="[v => /[0-9]/.test(v) || 'Numbers only']" :label="name" :hint="value.hint" persistent-hint/>
+            <v-text-field v-if="value.type==='port'" :rules="[
+                v => /[0-9]/.test(v) || 'Numbers only',
+                v => v<65566 || 'too high number',
+                v => v>0 || 'port number too low']" :label="name" :hint="value.hint" v-model="item.args[name]" persistent-hint min="1" max="65565" type="number"/>
+            <v-text-field v-if="value.type==='ip'" :rules="[v=>/^(?=\d+\.\d+\.\d+\.\d+$)(?:(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\.?){4}$/.test(v)||'invalid IP']" :label="name" :hint="value.hint" persistent-hint/>
             <v-select v-if="value.type==='select'" :items="value.items" :label="name" :hint="value.hint" v-model="item.args[name]" persistent-hint/>
           </div>
         </div>
