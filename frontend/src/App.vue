@@ -132,8 +132,12 @@ export default {
         return item;
       })
       const filtered=deleteUnneeded(JSON.parse(JSON.stringify(this.items)));
-      fetch('/api',{
+      fetch('/api/save',{
         method:'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
         body:JSON.stringify({actions:filtered}),
       }).then(res=>res.text()).then(alert).then(()=>location.reload())
       .catch(alert);
