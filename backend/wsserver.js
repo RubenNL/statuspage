@@ -1,8 +1,8 @@
 const modules=require('./modules');
 const WebSocket = require('ws');
-const fs=require('fs');
+const {getConfig}=require('./configinit')
 module.exports=server=>(new WebSocket.Server({ server })).on('connection', function connection(ws) {
-	function getConfig() {
+	function getParsedConfig() {
 		function parseActions(actions,trace) {
 			return actions.map((action,id) => {
 				if(!action.data) action.data = modules[action.module](action.args,data.moduleConfig[action.module]);
@@ -14,11 +14,11 @@ module.exports=server=>(new WebSocket.Server({ server })).on('connection', funct
 				return action;
 			})
 		}
-		const data=JSON.parse(fs.readFileSync('./config/config.json','utf8'));
+		const data=getConfig();
 		data.actions=parseActions(data.actions,[]);
 		return data;
 	}
-	const config=getConfig();
+	const config=getParsedConfig();
 	ws.oldSend=ws.send;
 	ws.send=data=>ws.oldSend(JSON.stringify(data));
 	ws.send({type:'actions',actions:config.actions});

@@ -1,5 +1,4 @@
-const fs=require('fs')
-require('./configinit');
+const {getConfig,saveConfig}=require('./configinit');
 const modules=require('./modules');
 const express=require('express');
 const app=express()
@@ -12,8 +11,8 @@ app.get("/api/modules",(req,res)=> {
 });
 app.post("/api/save",(req,res)=>{
 	const data=req.body;
-	if(!data.moduleConfig) data.moduleConfig=JSON.parse(fs.readFileSync('./config/config.json','utf8')).moduleConfig;
-	fs.writeFileSync('./config/config.json',JSON.stringify(data,null,2));
+	if(!data.moduleConfig) data.moduleConfig=getConfig().moduleConfig;
+	saveConfig(data);
 	res.end("saved!")
 });
 app.use(express.static('dist'))
