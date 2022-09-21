@@ -11,7 +11,7 @@
     "core-js": "^3.6.5",
     "json-url": "^3.0.0",
     "vue": "^2.6.11",
-    "vuetify": "^2.4.0"
+    "vuetify": "^2.6.10"
   },
   "devDependencies": {
     "@mdi/font": "^5.9.55",
